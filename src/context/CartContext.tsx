@@ -28,12 +28,14 @@ function backendToCartItems(response: CartBackendResponse): CartItem[] {
       price: Number(item.unitPrice),
       imageUrl: item.productImageUrl,
       category: item.category,
+      section: 'SUBLIMACION',
       stock: item.availableStock,
       edition: null,
       featured: false,
       active: true,
       createdAt: '',
       images: [],
+      attributes: [],
     },
   }));
 }
@@ -101,7 +103,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const removeFromCart = useCallback(
-    async (cartItemId: number) => {
+    async (cartItemId: string) => {
       const res = await cartApi.removeItem(cartItemId);
       applyBackendResponse(res);
     },
@@ -109,7 +111,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const updateQty = useCallback(
-    async (cartItemId: number, quantity: number) => {
+    async (cartItemId: string, quantity: number) => {
       if (quantity <= 0) {
         await removeFromCart(cartItemId);
         return;

@@ -12,7 +12,7 @@ export async function initCart(): Promise<CartBackendResponse> {
 }
 
 export async function addItem(
-  productId: number,
+  productId: string,
   quantity: number
 ): Promise<CartBackendResponse> {
   const { data } = await api.post<CartBackendResponse>('/cart/items', {
@@ -23,7 +23,7 @@ export async function addItem(
 }
 
 export async function updateItem(
-  itemId: number,
+  itemId: string,
   quantity: number
 ): Promise<CartBackendResponse> {
   const { data } = await api.patch<CartBackendResponse>(
@@ -33,7 +33,7 @@ export async function updateItem(
   return data;
 }
 
-export async function removeItem(itemId: number): Promise<CartBackendResponse> {
+export async function removeItem(itemId: string): Promise<CartBackendResponse> {
   const { data } = await api.delete<CartBackendResponse>(
     `/cart/items/${itemId}`
   );
