@@ -20,6 +20,7 @@ function readConfig(): AdminConfig {
 }
 
 function writeConfig(config: AdminConfig): void {
+  fs.mkdirSync(path.dirname(CONFIG_PATH), { recursive: true });
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8');
 }
 

@@ -50,6 +50,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Public folder (favicon, logos — NOT uploaded images, those go to the volume)
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
+# Create upload and config dirs owned by nextjs so the volume inherits permissions
+RUN mkdir -p /app/public/images/products /data/config \
+ && chown -R nextjs:nodejs /app/public/images/products /data/config
+
 # sharp is a native module — reinstall here so it picks up
 # the correct Alpine (musl) binaries instead of the build-stage ones.
 COPY --from=builder /app/package.json        ./package.json
