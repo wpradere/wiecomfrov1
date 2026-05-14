@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { CategoryDto } from '@/types';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1';
+const API = '/api/v1';
 
 const SECTIONS = [
   { value: 'SUBLIMACION', label: 'Sublimación' },

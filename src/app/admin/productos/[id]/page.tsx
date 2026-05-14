@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { ApiProduct, CategoryDto, ProductImageDto } from '@/types';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1';
+const API = '/api/v1';
 
 const SECTIONS = [
   { value: 'SUBLIMACION', label: 'Sublimación' },

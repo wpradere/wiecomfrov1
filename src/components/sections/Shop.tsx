@@ -1,12 +1,11 @@
 import ShopClient from './ShopClient';
 import { getProducts } from '@/services/productService';
 import type { CategoryDto } from '@/types';
-
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1';
+import { API_URL } from '@/lib/apiUrl';
 
 async function getMeta(): Promise<Record<string, CategoryDto[]>> {
   try {
-    const res = await fetch(`${API}/products/meta`, { cache: 'no-store' });
+    const res = await fetch(`${API_URL}/products/meta`, { cache: 'no-store' });
     if (!res.ok) return {};
     return res.json();
   } catch {

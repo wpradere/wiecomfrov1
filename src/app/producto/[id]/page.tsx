@@ -4,6 +4,7 @@ import CartButton from '@/components/layout/CartButton';
 import ProductGallery from './ProductGallery';
 import AddToCartSection from './AddToCartSection';
 import type { ApiProduct } from '@/types';
+import { API_URL } from '@/lib/apiUrl';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -13,7 +14,7 @@ interface Props {
 async function fetchProduct(id: string): Promise<ApiProduct | null> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1'}/products/${id}`,
+      `${API_URL}/products/${id}`,
       { cache: 'no-store' }
     );
     if (!res.ok) return null;

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { CategoryDto } from '@/types';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1';
+const API = '/api/v1';
 
 const inputCls =
   'bg-white/5 border border-white/10 text-white px-3 py-2 rounded-sm text-sm outline-none focus:border-[#ff5c35] transition-colors';

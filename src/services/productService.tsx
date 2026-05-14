@@ -1,7 +1,6 @@
 import axios from 'axios';
 import type { ApiProduct } from '@/types';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1';
+import { API_URL } from '@/lib/apiUrl';
 
 export async function getProducts(): Promise<ApiProduct[]> {
   const { data } = await axios.get<ApiProduct[]>(`${API_URL}/products`);

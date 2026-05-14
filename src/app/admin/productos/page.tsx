@@ -2,11 +2,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { ApiProduct } from '@/types';
 import AdminDeleteButton from './AdminDeleteButton';
+import { API_URL } from '@/lib/apiUrl';
 
 async function fetchProducts(): Promise<ApiProduct[]> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1'}/products`,
+      `${API_URL}/products`,
       { cache: 'no-store' }
     );
     if (!res.ok) return [];

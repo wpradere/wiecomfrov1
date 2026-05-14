@@ -1,6 +1,5 @@
 import AdminOrderActions from './AdminOrderActions';
-
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1';
+import { API_URL } from '@/lib/apiUrl';
 
 type OrderStatus =
   | 'PENDING_PAYMENT' | 'PENDING' | 'CONFIRMED'
@@ -54,8 +53,8 @@ const STATUS_COLOR: Record<OrderStatus, string> = {
 async function fetchOrders(status?: string): Promise<AdminOrder[]> {
   try {
     const url = status
-      ? `${API}/orders/status/${status}?size=100`
-      : `${API}/orders?size=100`;
+      ? `${API_URL}/orders/status/${status}?size=100`
+      : `${API_URL}/orders?size=100`;
     const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) return [];
     const data = await res.json();
