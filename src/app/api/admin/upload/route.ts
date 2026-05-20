@@ -16,14 +16,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No se recibió ningún archivo' }, { status: 400 });
   }
 
+  const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+  if (file.size > MAX_SIZE) {
+    return NextResponse.json({ error: 'El archivo supera el límite de 10 MB' }, { status: 413 });
+  }
+
   const buffer = Buffer.from(await file.arrayBuffer());
   const originalName = file.name.replace(/\.[^.]+$/, '').replace(/\s+/g, '-');
   const filename = `${originalName}-${Date.now()}.webp`;
-  const uploadDir = process.env.UPLOAD_DIR
-    ?? path.join(process.cwd(), 'public', 'images', 'products');
+  const uploadDir = path.join(process.cwd(), 'public', 'images', 'products');
   const dest = path.join(uploadDir, filename);
 
-  await fs.mkdir(path.dirname(dest), { recursive: true });
+  await fs.mkdir(uploadDir, { recursive: true });
   await sharp(buffer).webp({ quality: 85 }).toFile(dest);
 
   return NextResponse.json({ url: `/images/products/${filename}` });
