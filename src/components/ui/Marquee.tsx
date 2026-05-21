@@ -1,4 +1,4 @@
-const TEXT = 'LIMITED DROP • FREE SHIPPING ON ORDERS OVER $100 • NEW DESIGNS EVERY WEEK • ';
+const TEXT = 'EDICIONES LIMITADAS • ENVÍO GRATIS DESDE $70MIL • NUEVOS DISEÑOS CADA MES • ';
 
 export default function Marquee() {
   return (

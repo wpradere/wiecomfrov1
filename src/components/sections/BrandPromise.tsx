@@ -1,19 +1,19 @@
 const cards = [
   {
     number: '01.',
-    title: 'Calidad Estudio',
+    title: 'Calidad',
     description: 'Tintas de alta pigmentación y materiales seleccionados para una durabilidad eterna.',
     highlight: false,
   },
   {
     number: '02.',
-    title: 'Geek por Diseño',
+    title: 'Geek',
     description: 'No solo imprimimos, entendemos la cultura por detrás de cada pixel.',
     highlight: true,
   },
   {
     number: '03.',
-    title: 'Envío Global',
+    title: 'Envíos Nacionales',
     description: 'Tu pieza de colección llega a cualquier rincón del mundo con seguridad.',
     highlight: false,
   },

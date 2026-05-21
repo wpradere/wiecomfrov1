@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import * as OTPAuth from 'otpauth';
 import QRCode from 'qrcode';
 import { getTotpSecret, setTotpSecret } from '@/lib/adminConfig';
+import { isValidAdminToken } from '@/lib/authHelper';
 
 function isAuthenticated(req: NextRequest) {
-  return req.cookies.get('admin_token')?.value === process.env.ADMIN_SECRET;
+  return isValidAdminToken(req.cookies.get('admin_token')?.value);
 }
 
 async function buildPayload(secret: string) {
@@ -56,7 +57,7 @@ export async function PATCH(req: NextRequest) {
     period: 30,
     secret: OTPAuth.Secret.fromBase32(secret),
   });
-  const valid = totp.validate({ token: String(totpCode).trim(), window: 1 }) !== null;
+  const valid = totp.validate({ token: String(totpCode).trim(), window: 0 }) !== null;
   return NextResponse.json({ valid });
 }
 

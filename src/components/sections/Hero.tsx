@@ -27,8 +27,7 @@ export default function Hero() {
             <span className="accent-text">STORE.</span>
           </h1>
           <p className="text-[1.5rem] max-w-100 mb-12 leading-relaxed bg-white/35 p-4 rounded-md backdrop-blur-sm mt-4 font-medium">
-            Elevamos la sublimación a otro nivel. Excelentes diseños impresos con
-            precisión atómica.
+            Sublimamos tus ideas favoritas en camisetas, mugs y más. Diseños geniales, con una calidad que parece de otra galaxia.
           </p>
         </div>
 

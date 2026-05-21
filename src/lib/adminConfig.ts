@@ -25,7 +25,9 @@ function writeConfig(config: AdminConfig): void {
 }
 
 export function getAdminPassword(): string {
-  return readConfig().password ?? process.env.ADMIN_PASSWORD ?? 'wiimy2026';
+  const pwd = readConfig().password ?? process.env.ADMIN_PASSWORD;
+  if (!pwd) throw new Error('ADMIN_PASSWORD must be set');
+  return pwd;
 }
 
 export function setAdminPassword(newPassword: string): void {

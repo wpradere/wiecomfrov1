@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminPassword, setAdminPassword } from '@/lib/adminConfig';
+import { isValidAdminToken, isValidPassword } from '@/lib/authHelper';
 
 export async function POST(req: NextRequest) {
-  const token = req.cookies.get('admin_token')?.value;
-  if (token !== process.env.ADMIN_SECRET) {
+  if (!isValidAdminToken(req.cookies.get('admin_token')?.value)) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'La contraseña debe tener al menos 6 caracteres' }, { status: 400 });
   }
 
-  if (currentPassword !== getAdminPassword()) {
+  if (!isValidPassword(currentPassword, getAdminPassword())) {
     return NextResponse.json({ error: 'La contraseña actual es incorrecta' }, { status: 401 });
   }
 
