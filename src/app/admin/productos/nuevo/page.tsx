@@ -12,6 +12,8 @@ const SECTIONS = [
   { value: 'ZONA_GEEK',   label: 'Zona Geek' },
 ];
 
+const ALL_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -30,6 +32,7 @@ export default function NuevoProducto() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -54,8 +57,17 @@ export default function NuevoProducto() {
       .catch(() => {});
   }, []);
 
+  const selectedCategory = categories.find((c) => c.id === form.categoryId);
+  const showSizes = selectedCategory?.name === 'CLOTHES' && form.section === 'SUBLIMACION';
+
   function set(field: string, value: string | boolean) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function toggleSize(size: string) {
+    setSelectedSizes((prev) =>
+      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
+    );
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -70,7 +82,7 @@ export default function NuevoProducto() {
     setUploading(false);
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -92,14 +104,28 @@ export default function NuevoProducto() {
       }),
     });
 
-    if (res.ok) {
-      const product = await res.json();
-      router.push(`/admin/productos/${product.id}`);
-    } else {
+    if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       setError(data.message ?? 'Error al crear el producto');
       setLoading(false);
+      return;
     }
+
+    const product = await res.json();
+
+    if (showSizes && selectedSizes.length > 0) {
+      await Promise.all(
+        selectedSizes.map((size, i) =>
+          fetch(`${API}/products/${product.id}/attributes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: 'talla', value: size, sortOrder: i }),
+          })
+        )
+      );
+    }
+
+    router.push(`/admin/productos/${product.id}`);
   }
 
   return (
@@ -165,6 +191,35 @@ export default function NuevoProducto() {
             </select>
           </Field>
         </div>
+
+        {showSizes && (
+          <Field label="Tallas disponibles">
+            <div className="flex flex-wrap gap-2 mt-1">
+              {ALL_SIZES.map((size) => {
+                const active = selectedSizes.includes(size);
+                return (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => toggleSize(size)}
+                    className={`px-4 py-1.5 text-sm font-bold rounded-sm border transition-all duration-200 ${
+                      active
+                        ? 'bg-[#ff5c35] border-[#ff5c35] text-white'
+                        : 'bg-white/5 border-white/10 text-white/50 hover:border-white/30 hover:text-white/80'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedSizes.length > 0 && (
+              <p className="text-xs text-white/30 mt-1">
+                Seleccionadas: {selectedSizes.join(', ')}
+              </p>
+            )}
+          </Field>
+        )}
 
         <Field label="Edición (opcional)">
           <input

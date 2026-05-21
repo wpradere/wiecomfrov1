@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import type { ApiProduct, CategoryDto, ProductImageDto } from '@/types';
+import type { ApiProduct, CategoryDto, ProductAttributeDto, ProductImageDto } from '@/types';
 
 const API = '/api/v1';
 
@@ -11,6 +11,8 @@ const SECTIONS = [
   { value: 'SUBLIMACION', label: 'Sublimación' },
   { value: 'ZONA_GEEK',   label: 'Zona Geek' },
 ];
+
+const ALL_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
 const inputCls = 'bg-white/5 border border-white/10 text-white px-3 py-2.5 rounded-sm text-sm outline-none focus:border-[#ff5c35] transition-colors';
 const selectCls = `${inputCls} cursor-pointer`;
@@ -38,6 +40,7 @@ export default function EditarProducto({ params }: { params: Promise<{ id: strin
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadingExtra, setUploadingExtra] = useState(false);
+  const [sizeAttrs, setSizeAttrs] = useState<ProductAttributeDto[]>([]);
   const [form, setForm] = useState({
     name: '', description: '', price: '', imageUrl: '',
     categoryId: '', section: 'SUBLIMACION',
@@ -51,6 +54,7 @@ export default function EditarProducto({ params }: { params: Promise<{ id: strin
     ]).then(([p, cats]: [ApiProduct, CategoryDto[]]) => {
       setProduct(p);
       setCategories(cats.filter((c) => c.active));
+      setSizeAttrs((p.attributes ?? []).filter((a) => a.name === 'talla'));
       setForm({
         name: p.name,
         description: p.description ?? '',
@@ -66,8 +70,27 @@ export default function EditarProducto({ params }: { params: Promise<{ id: strin
     });
   }, [id]);
 
+  const selectedCategory = categories.find((c) => c.id === form.categoryId);
+  const showSizes = selectedCategory?.name === 'CLOTHES' && form.section === 'SUBLIMACION';
+
   function set(field: string, value: string | boolean) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function toggleSize(size: string) {
+    const existing = sizeAttrs.find((a) => a.value === size);
+    if (existing) {
+      await fetch(`${API}/products/${id}/attributes/${existing.id}`, { method: 'DELETE' });
+      setSizeAttrs((prev) => prev.filter((a) => a.id !== existing.id));
+    } else {
+      const res = await fetch(`${API}/products/${id}/attributes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'talla', value: size, sortOrder: sizeAttrs.length }),
+      });
+      const newAttr: ProductAttributeDto = await res.json();
+      setSizeAttrs((prev) => [...prev, newAttr]);
+    }
   }
 
   async function handleMainImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -82,7 +105,7 @@ export default function EditarProducto({ params }: { params: Promise<{ id: strin
     setUploading(false);
   }
 
-  async function handleSave(e: React.FormEvent) {
+  async function handleSave(e: React.SyntheticEvent) {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -173,12 +196,7 @@ export default function EditarProducto({ params }: { params: Promise<{ id: strin
 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Categoría *">
-            <select
-              className={selectCls}
-              value={form.categoryId}
-              onChange={(e) => set('categoryId', e.target.value)}
-              required
-            >
+            <select className={selectCls} value={form.categoryId} onChange={(e) => set('categoryId', e.target.value)} required>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.label ?? c.name}</option>
               ))}
@@ -191,6 +209,35 @@ export default function EditarProducto({ params }: { params: Promise<{ id: strin
           </Field>
         </div>
 
+        {showSizes && (
+          <Field label="Tallas disponibles">
+            <div className="flex flex-wrap gap-2 mt-1">
+              {ALL_SIZES.map((size) => {
+                const active = sizeAttrs.some((a) => a.value === size);
+                return (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => toggleSize(size)}
+                    className={`px-4 py-1.5 text-sm font-bold rounded-sm border transition-all duration-200 ${
+                      active
+                        ? 'bg-[#ff5c35] border-[#ff5c35] text-white'
+                        : 'bg-white/5 border-white/10 text-white/50 hover:border-white/30 hover:text-white/80'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
+            </div>
+            {sizeAttrs.length > 0 && (
+              <p className="text-xs text-white/30 mt-1">
+                Seleccionadas: {ALL_SIZES.filter((s) => sizeAttrs.some((a) => a.value === s)).join(', ')}
+              </p>
+            )}
+          </Field>
+        )}
+
         <Field label="Edición">
           <input className={inputCls} placeholder="ej: 01/20" value={form.edition} onChange={(e) => set('edition', e.target.value)} />
         </Field>
@@ -199,7 +246,7 @@ export default function EditarProducto({ params }: { params: Promise<{ id: strin
           <div className="flex flex-col gap-2">
             {isValidUrl(form.imageUrl) && (
               <div className="relative w-24 h-24 bg-white/5 rounded-sm overflow-hidden">
-                <Image src={form.imageUrl} alt={form.name} fill className="object-contain p-2" sizes="96px" />
+                <Image src={form.imageUrl} alt={form.name} fill className="object-contain p-2" sizes="96px" unoptimized={form.imageUrl.startsWith('/')} />
               </div>
             )}
             <input type="file" accept="image/*" onChange={handleMainImageUpload}
@@ -243,7 +290,7 @@ export default function EditarProducto({ params }: { params: Promise<{ id: strin
             {product.images.map((img: ProductImageDto) => (
               <div key={img.id} className="relative group bg-white/5 rounded-sm overflow-hidden aspect-square">
                 {isValidUrl(img.imageUrl) && (
-                  <Image src={img.imageUrl} alt={img.altText ?? ''} fill className="object-contain p-2" sizes="200px" />
+                  <Image src={img.imageUrl} alt={img.altText ?? ''} fill className="object-contain p-2" sizes="200px" unoptimized={img.imageUrl.startsWith('/')} />
                 )}
                 <button
                   onClick={() => handleDeleteImage(img.id)}
