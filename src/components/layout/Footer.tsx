@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import NewsletterForm from './NewsletterForm';
 
 export default function Footer() {
@@ -13,9 +14,9 @@ export default function Footer() {
           <div>
             <h4 className="mb-8 text-[0.8rem] uppercase font-bold">Navegación</h4>
             <ul className="list-none space-y-2">
-              <li><a href="#" className="text-[#666] text-sm transition-all duration-500 hover:text-accent">Términos</a></li>
-              <li><a href="#" className="text-[#666] text-sm transition-all duration-500 hover:text-accent">Privacidad</a></li>
-              <li><a href="#" className="text-[#666] text-sm transition-all duration-500 hover:text-accent">FAQ</a></li>
+              <li><Link href="/terminos" className="text-[#666] text-sm transition-all duration-500 hover:text-accent">Términos</Link></li>
+              <li><Link href="/privacidad" className="text-[#666] text-sm transition-all duration-500 hover:text-accent">Privacidad</Link></li>
+              <li><Link href="/faq" className="text-[#666] text-sm transition-all duration-500 hover:text-accent">FAQ</Link></li>
             </ul>
           </div>
           <div>

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Marquee from '@/components/ui/Marquee';
 import CartButton from './CartButton';
 
@@ -6,9 +7,9 @@ export default function Header() {
     <header id="main-header" className="border-b border-grey-border relative z-100">
       <Marquee />
       <nav className="container flex justify-between items-center h-22.5">
-        <div className="font-heading text-[2.2rem] tracking-wide">
+        <Link href="/" className="font-heading text-[2.2rem] tracking-wide">
           WIIMY<span className="text-accent">.</span>STORE
-        </div>
+        </Link>
         <div className="flex items-center gap-12">
           <ul className="flex list-none gap-8">
             <li>
